@@ -1024,25 +1024,6 @@ namespace ts {
                 }
             }
 
-            // Return the result if we have an immediate super() call on the last statement.
-            if (superCallExpression && statementOffset === ctorStatements.length - 1) {
-                const returnStatement = createReturn(superCallExpression);
-
-                if (superCallExpression.kind !== SyntaxKind.BinaryExpression
-                    || (superCallExpression as BinaryExpression).left.kind !== SyntaxKind.CallExpression) {
-                    Debug.fail("Assumed generated super call would have form 'super.call(...) || this'.");
-                }
-
-                // Shift comments from the original super call to the return statement.
-                setCommentRange(returnStatement, getCommentRange(
-                    setEmitFlags(
-                        (superCallExpression as BinaryExpression).left,
-                        EmitFlags.NoComments)));
-
-                statements.push(returnStatement);
-                return SuperCaptureResult.ReplaceWithReturn;
-            }
-
             // Perform the capture.
             captureThisForNode(statements, ctor, superCallExpression, firstStatement);
 
